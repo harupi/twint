@@ -31,17 +31,23 @@ def User(ur):
     _usr.url = ur.get('data', {}).get('user', {}).get('legacy', {}).get('url')
     # parsing date to user-friendly format
     _dt = ur.get('data', {}).get('user', {}).get('legacy', {}).get('created_at')
-    _dt = datetime.datetime.strptime(_dt, '%a %b %d %H:%M:%S %z %Y')
-    # date is of the format year,
-    _usr.join_date = _dt.strftime(User_formats['join_date'])
-    _usr.join_time = _dt.strftime(User_formats['join_time'])
+    if _dt:
+        _dt = datetime.datetime.strptime(_dt, '%a %b %d %H:%M:%S %z %Y')
+        # date is of the format year,
+    _usr.join_date = _dt.strftime(User_formats['join_date']) if _dt else ""
+    _usr.join_time = _dt.strftime(User_formats['join_time']) if _dt else ""
 
     # :type `int`
-    _usr.tweets = int(ur.get('data', {}).get('user', {}).get('legacy', {}).get('statuses_count'))
-    _usr.following = int(ur.get('data', {}).get('user', {}).get('legacy', {}).get('friends_count'))
-    _usr.followers = int(ur.get('data', {}).get('user', {}).get('legacy', {}).get('followers_count'))
-    _usr.likes = int(ur.get('data', {}).get('user', {}).get('legacy', {}).get('favourites_count'))
-    _usr.media_count = int(ur.get('data', {}).get('user', {}).get('legacy', {}).get('media_count'))
+    _tweets = ur.get('data', {}).get('user', {}).get('legacy', {}).get('statuses_count')
+    _usr.tweets = int(_tweets) if _tweets else 0
+    _following = ur.get('data', {}).get('user', {}).get('legacy', {}).get('friends_count')
+    _usr.following = int(_following) if _following else 0
+    _followers = ur.get('data', {}).get('user', {}).get('legacy', {}).get('followers_count')
+    _usr.followers = int(_followers) if _followers else 0
+    _likes = ur.get('data', {}).get('user', {}).get('legacy', {}).get('favourites_count')
+    _usr.likes = int(_likes) if _likes else 0
+    _media_count = ur.get('data', {}).get('user', {}).get('legacy', {}).get('media_count')
+    _usr.media_count = int(_media_count) if _media_count else _media_count
 
     _usr.is_private = ur.get('data', {}).get('user', {}).get('legacy', {}).get('protected')
     _usr.is_verified = ur.get('data', {}).get('user', {}).get('legacy', {}).get('verified')
