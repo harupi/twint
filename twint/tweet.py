@@ -3,7 +3,8 @@ from datetime import datetime, timezone
 
 import logging as logme
 from googletransx import Translator
-# ref. 
+
+# ref.
 # - https://github.com/x0rzkov/py-googletrans#basic-usage
 translator = Translator()
 
@@ -111,6 +112,29 @@ def Tweet(tw, config):
         t.video = 1 if len(tw['extended_entities']['media']) else 0
     except KeyError:
         t.video = 0
+    try:
+        if t.video > 0:
+            t.video_url = tw['extended_entities']['media'][0]['expanded_url']
+        else:
+            t.video_url = ""
+    except KeyError:
+        t.video_url = ""
+
+    if t.video > 0:
+        try:
+            # 動画引用リツイート
+            t.video_source_user = tw['extended_entities']['media'][0]['additional_media_info']['source_user'][
+                'screen_name']
+            t.video_quote_flag = True
+        except KeyError:
+            # 自分のオリジナル動画
+            t.video_source_user = tw["user_data"]['screen_name']
+            t.video_quote_flag = False
+    else:
+        t.video_source_user = ""
+        t.video_quote_flag = False
+
+
     try:
         t.thumbnail = tw['extended_entities']['media'][0]['media_url_https']
     except KeyError:
